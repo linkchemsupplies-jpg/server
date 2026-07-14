@@ -194,14 +194,16 @@ export async function GET() {
   }
 }*/
 
-import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
 import { dbConnect } from "@/lib/mongodb";
 import Conversation from "@/models/Conversation";
 
-export async function GET() {
+//export async function GET() {
+  export async function GET(request: NextRequest) {
   try {
-    const session = await getSession();
+    //const session = await getSession();\
+    const session = await requireAuth(request);
 
     if (!session) {
       return NextResponse.json(

@@ -1,7 +1,7 @@
 
 // lib/auth.ts 
 import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { NextRequest } from "next/server";
 import {dbConnect} from "./mongodb";
 import User from "@/models/UserModel/User";
@@ -27,7 +27,7 @@ export async function verifyToken(token: string): Promise<TokenPayload | null> {
   }
 }
 
-export async function getSession() {
+/*export async function getSession() {
   const cookieStore = await cookies();
   const token = cookieStore.get("auth-token")?.value;
   
@@ -39,6 +39,37 @@ export async function getSession() {
   await dbConnect();
   const user = await User.findById(payload.id).select("-password");
   
+  return user;
+}*/
+
+export async function getSession() {
+  let token: string | undefined;
+
+  // Check Authorization header (Flutter/mobile)
+  const headersList = await headers();
+  const authHeader = headersList.get("authorization");
+
+  if (authHeader?.startsWith("Bearer ")) {
+    token = authHeader.replace("Bearer ", "");
+  }
+
+  // Fallback to browser cookie
+  if (!token) {
+    const cookieStore = await cookies();
+    token = cookieStore.get("auth-token")?.value;
+  }
+
+  if (!token) return null;
+
+  const payload = await verifyToken(token);
+
+  if (!payload) return null;
+
+  await dbConnect();
+
+  const user = await User.findById(payload.id)
+    .select("-password");
+
   return user;
 }
 
