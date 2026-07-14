@@ -7,7 +7,7 @@ const ALLOWED_ORIGINS = [
   'http://localhost:5500',
   'http://127.0.0.1:3000',
   'http://localhost:3000',
-  'http://localhost:60502',
+  'http://localhost:53957',
   'https://linkchemsupplies.co.ke',
   'https://www.linkchemsupplies.co.ke'
 ];
